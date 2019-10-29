@@ -1,0 +1,21 @@
+@startuml
+skinparam classFontSize 20
+skinparam classAttributeFontSize 17
+
+class "Chess-Game" as Game {
+board: instance
+turn: int
+players: list
+--
+__init__ (self) : creates and initializes a board
+_setTurn(self, Player )
+_setPlayer(self, playerPosition, Player)
+promptPlayerToMove(self)
+promptToSetPlayer(self, playerPosition)
+promptPlayerCheck(self)
+promptPlayerCheckMate(self)
+promptPlayerToRestart(self)
+
+}
+
+@enduml

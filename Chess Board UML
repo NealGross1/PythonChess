@@ -1,0 +1,21 @@
+@startuml
+skinparam classFontSize 20
+skinparam classAttributeFontSize 17
+
+class "Chess-Board" as Board {
+board spaces: list of lists 8X8
+history: list of previous board states
+--
+__init__ (self) : adds all pieces to the boards into correct location and sets colors
+allValidMoves(self, turn: int): a structured list of pieces and where they can move
+movePiece(self, piece, targetPosition)
+_addPiece(self, Piece, position)
+_removePiece(self, Piece, Position)
+isCheck(self)
+isCheckMate(self)
+_addHistory(self)
+clearPathToMoveToLocation(self, startLocation, endLocation) #diagonally or linearly only
+
+}
+
+@enduml

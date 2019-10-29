@@ -1,0 +1,35 @@
+@startuml
+skinparam classFontSize 20
+skinparam classAttributeFontSize 17
+
+class "Chess-Piece" as Piece {
+color : string
+position: X, Y structure
+--
+.possibleMoves (self, ChessBoard) : list
+.setColor (self, color)
+.getcolor(self)
+.setPosition(self)
+}
+
+class "Pawn" as Pawn{
+}
+class "King" as King{
+}
+class "Queen" as Queen{
+}
+class "Bishop" as Bishop{
+}
+class "Rook" as Rook{
+}
+class "Knight" as Knight{
+}
+
+Piece <|-- Pawn
+Piece <|-- King
+Piece <|-- Queen
+Piece <|-- Bishop
+Piece <|-- Knight
+Piece <|-- Rook
+
+@enduml

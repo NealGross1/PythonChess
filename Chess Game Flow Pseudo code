@@ -1,0 +1,14 @@
+Launch Game
+  Select Player Type for Player 1 and Player 2 (P1 white,P2 black)
+  Start Game Command
+  Initializes board and pieces
+  P1 goes first Turn
+  P1 moves
+  P1 turn ends P2 turn starts
+  P2 moves
+  P2 turn ends and repeat
+
+  Every Move
+  only allow correct moves 
+  check for repeat / looping moves = draw
+  check for checks and check mates
