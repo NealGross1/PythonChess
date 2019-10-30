@@ -22,26 +22,17 @@ class Pawn(ChessPiece):
             for col in range(8):
                 tarPosition = [row,col]
                 if currColor =='black':
-                    #black pawns must move down exactly 1 row
-                    if row == currPosition[0] - 1:
-                        piecePropertiesAtPosition = ChessBoard.chessPiecePropertiesAtPosition(row,col)
-                        #nothing blocking path
-                        if piecePropertiesAtPosition[0] == 0:
-                            possibleMoves.append(tarPosition)
-                        #enemy to kill diagonally
-                        if piecePropertiesAtPosition[0] == 1 and (col == currPosition[1]+1 or col == currPosition[1]-1) and piecePropertiesAtPosition[1]== 'white':
-                            possibleMoves.append(tarPosition)
-
+                    movementDirection = -1
                 else:
-                    #white pawns must move up exactly 1 row
-                    if row == currPosition[0] + 1:
-                        piecePropertiesAtPosition = ChessBoard.chessPiecePropertiesAtPosition(row,col)
-                        #nothing blocking path
-                        if piecePropertiesAtPosition[0] == 0:
-                            possibleMoves.append(tarPosition)
-                        #enemy to kill diagonally
-                        if piecePropertiesAtPosition[0] == 1 and (col == currPosition[1]+1 or col == currPosition[1]-1) and piecePropertiesAtPosition[1]== 'black':
-                            possibleMoves.append(tarPosition)
+                    movementDirection = 1
+                if row == currPosition[0] + movementDirection :
+                    piecePropertiesAtPosition = ChessBoard.chessPiecePropertiesAtPosition([row,col])
+                    #nothing blocking path
+                    if piecePropertiesAtPosition[0] == 0 and col == currPosition[1]:
+                        possibleMoves.append(tarPosition)
+                    #enemy to kill diagonally
+                    if piecePropertiesAtPosition[0] == 1 and (col == currPosition[1]+1 or col == currPosition[1]-1) and piecePropertiesAtPosition[1] != currColor:
+                        possibleMoves.append(tarPosition)
 
         return possibleMoves
 
@@ -60,11 +51,11 @@ class Knight(ChessPiece):
                 tarPosition = [row,col]
                 #knight move in L shape hitting a max of 8 Positions
                 if (row == currPosition[0] + 2 or row == currPosition[0] - 2) and (col == currPosition[1] + 1 or col == currPosition[1] - 1):
-                    piecePropertiesAtPosition = ChessBoard.chessPiecePropertiesAtPosition(row,col)
+                    piecePropertiesAtPosition = ChessBoard.chessPiecePropertiesAtPosition([row,col])
                     if piecePropertiesAtPosition[0] == 0 or (piecePropertiesAtPosition[1]!=currColor):
                         possibleMoves.append(tarPosition)
                 if (row == currPosition[0] + 1 or row == currPosition[0] - 1)and (col == currPosition[1] + 2 or col == currPosition[1] - 2):
-                    piecePropertiesAtPosition = ChessBoard.chessPiecePropertiesAtPosition(row,col)
+                    piecePropertiesAtPosition = ChessBoard.chessPiecePropertiesAtPosition([row,col])
                     if piecePropertiesAtPosition[0] == 0 or (piecePropertiesAtPosition[1]!=currColor):
                         possibleMoves.append(tarPosition)
 
@@ -87,7 +78,7 @@ class King(ChessPiece):
                 if ((row == currPosition[0] + 1 or row == currPosition[0] - 1 or row == currPosition[0])
                     and (col == currPosition[1] + 1 or col == currPosition[1] - 1 or col == currPosition[1])
                     and tarPosition != currPosition):
-                        piecePropertiesAtPosition = ChessBoard.chessPiecePropertiesAtPosition(row,col)
+                        piecePropertiesAtPosition = ChessBoard.chessPiecePropertiesAtPosition([row,col])
                         if piecePropertiesAtPosition[0] == 0 or (piecePropertiesAtPosition[1]!=currColor):
                             possibleMoves.append(tarPosition)
 
@@ -108,7 +99,7 @@ class Bishop(ChessPiece):
                 tarPosition = [row,col]
                 #Bisops move diagonally xMove == yMove
                 if (abs(tarPosition[0] - curPosition[0]) == abs(tarPosition[1] - curPosition[1])) and tarPosition != currPosition:
-                    piecePropertiesAtPosition = ChessBoard.chessPiecePropertiesAtPosition(row,col)
+                    piecePropertiesAtPosition = ChessBoard.chessPiecePropertiesAtPosition([row,col])
                     if (piecePropertiesAtPosition[0] == 0 or piecePropertiesAtPosition[1]!=currColor) and clearPathToMoveToPosition(ChessBoard, currPosition,tarPosition):
                         possibleMoves.append(tarPosition)
 
@@ -129,7 +120,7 @@ class Queen(ChessPiece):
                         tarPosition = [row,col]
                         #Quens can move in the 4 dialgonal directions
                         if (abs(tarPosition[0] - curPosition[0]) == abs(tarPosition[1] - curPosition[1])) and tarPosition != currPosition:
-                            piecePropertiesAtPosition = ChessBoard.chessPiecePropertiesAtPosition(row,col)
+                            piecePropertiesAtPosition = ChessBoard.chessPiecePropertiesAtPosition([row,col])
                             if (piecePropertiesAtPosition[0] == 0 or piecePropertiesAtPosition[1]!=currColor) and clearPathToMoveToPosition(ChessBoard, currPosition,tarPosition):
                                 possibleMoves.append(tarPosition)
 
@@ -138,7 +129,7 @@ class Queen(ChessPiece):
                             or (tarPosition[0] != curPosition[0] and tarPosition[1] == curPosition[1]))
                             and tarPosition != currPosition):
 
-                            piecePropertiesAtPosition = ChessBoard.chessPiecePropertiesAtPosition(row,col)
+                            piecePropertiesAtPosition = ChessBoard.chessPiecePropertiesAtPosition([row,col])
                             if (piecePropertiesAtPosition[0] == 0 or piecePropertiesAtPosition[1]!=currColor) and clearPathToMoveToPosition(ChessBoard, currPosition,tarPosition):
                                 possibleMoves.append(tarPosition)
 
@@ -162,7 +153,7 @@ class Rook(ChessPiece):
                             or (tarPosition[0] != curPosition[0] and tarPosition[1] == curPosition[1]))
                             and tarPosition != currPosition):
 
-                            piecePropertiesAtPosition = ChessBoard.chessPiecePropertiesAtPosition(row,col)
+                            piecePropertiesAtPosition = ChessBoard.chessPiecePropertiesAtPosition([row,col])
                             if (piecePropertiesAtPosition[0] == 0 or piecePropertiesAtPosition[1]!=currColor) and clearPathToMoveToPosition(ChessBoard, currPosition,tarPosition):
                                 possibleMoves.append(tarPosition)
 

@@ -168,13 +168,34 @@ class TestChessBoard(unittest.TestCase):
 class TestPawn(unittest.TestCase):
     def test_possibleMoves(self):
         pawnCenterOfBoard = Pawn([4,4], 'white')
-        pawnBlackCenterOfBoard = Pawn([2,4],'black')
-        #newBoard = ChessBoard()
-        #black movement & white movement difference
-
+        pawnBlackInfrontOfPawn = Pawn([2,4],'black')
+        newBoard = ChessBoard()
+        newBoard._addPiece(pawnCenterOfBoard)
+        newBoard._addPiece(pawnBlackInfrontOfPawn)
+        #black movement
+        tarPiece = newBoard.getPieceAtPosition([6,4])
+        self.assertIsInstance(tarPiece,Pawn)
+        possibleMoves = tarPiece.getPossibleMoves(newBoard)
+        self.assertEqual(possibleMoves, [[5,4]])
+        #diagnal movement and white movement
+        tarPiece = newBoard.getPieceAtPosition([1,3])
+        self.assertIsInstance(tarPiece,Pawn)
+        possibleMoves = tarPiece.getPossibleMoves(newBoard)
+        self.assertEqual(len(possibleMoves),2)
+        expectedMoves =[[2,4],[2,3]]
+        for i in range(len(possibleMoves)):
+            self.assertIn(expectedMoves[i],possibleMoves)
         #off the board movement
+        tarPiece = newBoard.getPieceAtPosition([7,7])
+        newBoard._removePiece(tarPiece)
+        tarPiece = newBoard.getPieceAtPosition([1,3])
+        newBoard._addPiece(tarPiece,[7,7])
+        possibleMoves = tarPiece.getPossibleMoves(newBoard)
+        self.assertEqual(possibleMoves, [])
 
-        #diagnal movement with and without a piece there
+class TestKnight(unittest.TestCase):
+    def test_possibleMoves(self):
+        self.assertTrue(False,'incomplete')
 
 if __name__ == '__main__':
     unittest.main()
