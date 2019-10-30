@@ -32,7 +32,7 @@ class Pawn(ChessPiece):
                         if piecePropertiesAtPosition[0] == 1 and (col == currPosition[1]+1 or col == currPosition[1]-1) and piecePropertiesAtPosition[1]== 'white':
                             possibleMoves.append(tarPosition)
 
-                else currColor == 'white '
+                else:
                     #white pawns must move up exactly 1 row
                     if row == currPosition[0] + 1:
                         piecePropertiesAtPosition = ChessBoard.ChessPiecePropertiesAtPosition(row,col)
@@ -137,7 +137,7 @@ class Queen(ChessPiece):
                         if (((tarPosition[0] == curPosition[0] and tarPosition[1] != curPosition[1])
                             or (tarPosition[0] != curPosition[0] and tarPosition[1] == curPosition[1]))
                             and tarPosition != currPosition):
-                
+
                             piecePropertiesAtPosition = ChessBoard.ChessPiecePropertiesAtPosition(row,col)
                             if (piecePropertiesAtPosition[0] == 0 or piecePropertiesAtPosition[1]!=currColor) and clearPathToMoveToPosition(ChessBoard, currPosition,tarPosition):
                                 possibleMoves.append(tarPosition)
@@ -258,7 +258,7 @@ class ChessBoard:
         chessPiece = row[position[1]]
         if chessPiece != 0 :
             return 1, chessPiece.color
-        else
+        else:
             return 0, None
 
     def _clearPathToMoveToPositionGivenDirection(self, startPosition, endPosition, xMove,yMove):
@@ -277,7 +277,7 @@ class ChessBoard:
     #returns true if path is clear of other pieces otherwise returns False
         xMovement = endPosition[1] - startPostion[1]
         yMovement = endPosition[0] - startPosition[0]
-        return _clearPathToMoveToPositionGivenDirection(self, startPosition endPosition,_normalizeDirections(xMovement),_normalizeDirections(yMovement) )
+        return _clearPathToMoveToPositionGivenDirection(self, startPosition, endPosition,_normalizeDirections(xMovement),_normalizeDirections(yMovement) )
 
 
 
@@ -291,5 +291,5 @@ def _normalizeDirections(directionMagnitude):
         return 1
     elif directionMagnitude == 0:
         return 0
-    else
+    else:
         return -1
