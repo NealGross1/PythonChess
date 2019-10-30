@@ -24,7 +24,7 @@ class Pawn(ChessPiece):
                 if currColor =='black':
                     #black pawns must move down exactly 1 row
                     if row == currPosition[0] - 1:
-                        piecePropertiesAtPosition = ChessBoard.ChessPiecePropertiesAtPosition(row,col)
+                        piecePropertiesAtPosition = ChessBoard.chessPiecePropertiesAtPosition(row,col)
                         #nothing blocking path
                         if piecePropertiesAtPosition[0] == 0:
                             possibleMoves.append(tarPosition)
@@ -35,7 +35,7 @@ class Pawn(ChessPiece):
                 else:
                     #white pawns must move up exactly 1 row
                     if row == currPosition[0] + 1:
-                        piecePropertiesAtPosition = ChessBoard.ChessPiecePropertiesAtPosition(row,col)
+                        piecePropertiesAtPosition = ChessBoard.chessPiecePropertiesAtPosition(row,col)
                         #nothing blocking path
                         if piecePropertiesAtPosition[0] == 0:
                             possibleMoves.append(tarPosition)
@@ -60,11 +60,11 @@ class Knight(ChessPiece):
                 tarPosition = [row,col]
                 #knight move in L shape hitting a max of 8 Positions
                 if (row == currPosition[0] + 2 or row == currPosition[0] - 2) and (col == currPosition[1] + 1 or col == currPosition[1] - 1):
-                    piecePropertiesAtPosition = ChessBoard.ChessPiecePropertiesAtPosition(row,col)
+                    piecePropertiesAtPosition = ChessBoard.chessPiecePropertiesAtPosition(row,col)
                     if piecePropertiesAtPosition[0] == 0 or (piecePropertiesAtPosition[1]!=currColor):
                         possibleMoves.append(tarPosition)
                 if (row == currPosition[0] + 1 or row == currPosition[0] - 1)and (col == currPosition[1] + 2 or col == currPosition[1] - 2):
-                    piecePropertiesAtPosition = ChessBoard.ChessPiecePropertiesAtPosition(row,col)
+                    piecePropertiesAtPosition = ChessBoard.chessPiecePropertiesAtPosition(row,col)
                     if piecePropertiesAtPosition[0] == 0 or (piecePropertiesAtPosition[1]!=currColor):
                         possibleMoves.append(tarPosition)
 
@@ -87,7 +87,7 @@ class King(ChessPiece):
                 if ((row == currPosition[0] + 1 or row == currPosition[0] - 1 or row == currPosition[0])
                     and (col == currPosition[1] + 1 or col == currPosition[1] - 1 or col == currPosition[1])
                     and tarPosition != currPosition):
-                        piecePropertiesAtPosition = ChessBoard.ChessPiecePropertiesAtPosition(row,col)
+                        piecePropertiesAtPosition = ChessBoard.chessPiecePropertiesAtPosition(row,col)
                         if piecePropertiesAtPosition[0] == 0 or (piecePropertiesAtPosition[1]!=currColor):
                             possibleMoves.append(tarPosition)
 
@@ -108,7 +108,7 @@ class Bishop(ChessPiece):
                 tarPosition = [row,col]
                 #Bisops move diagonally xMove == yMove
                 if (abs(tarPosition[0] - curPosition[0]) == abs(tarPosition[1] - curPosition[1])) and tarPosition != currPosition:
-                    piecePropertiesAtPosition = ChessBoard.ChessPiecePropertiesAtPosition(row,col)
+                    piecePropertiesAtPosition = ChessBoard.chessPiecePropertiesAtPosition(row,col)
                     if (piecePropertiesAtPosition[0] == 0 or piecePropertiesAtPosition[1]!=currColor) and clearPathToMoveToPosition(ChessBoard, currPosition,tarPosition):
                         possibleMoves.append(tarPosition)
 
@@ -129,7 +129,7 @@ class Queen(ChessPiece):
                         tarPosition = [row,col]
                         #Quens can move in the 4 dialgonal directions
                         if (abs(tarPosition[0] - curPosition[0]) == abs(tarPosition[1] - curPosition[1])) and tarPosition != currPosition:
-                            piecePropertiesAtPosition = ChessBoard.ChessPiecePropertiesAtPosition(row,col)
+                            piecePropertiesAtPosition = ChessBoard.chessPiecePropertiesAtPosition(row,col)
                             if (piecePropertiesAtPosition[0] == 0 or piecePropertiesAtPosition[1]!=currColor) and clearPathToMoveToPosition(ChessBoard, currPosition,tarPosition):
                                 possibleMoves.append(tarPosition)
 
@@ -138,7 +138,7 @@ class Queen(ChessPiece):
                             or (tarPosition[0] != curPosition[0] and tarPosition[1] == curPosition[1]))
                             and tarPosition != currPosition):
 
-                            piecePropertiesAtPosition = ChessBoard.ChessPiecePropertiesAtPosition(row,col)
+                            piecePropertiesAtPosition = ChessBoard.chessPiecePropertiesAtPosition(row,col)
                             if (piecePropertiesAtPosition[0] == 0 or piecePropertiesAtPosition[1]!=currColor) and clearPathToMoveToPosition(ChessBoard, currPosition,tarPosition):
                                 possibleMoves.append(tarPosition)
 
@@ -162,7 +162,7 @@ class Rook(ChessPiece):
                             or (tarPosition[0] != curPosition[0] and tarPosition[1] == curPosition[1]))
                             and tarPosition != currPosition):
 
-                            piecePropertiesAtPosition = ChessBoard.ChessPiecePropertiesAtPosition(row,col)
+                            piecePropertiesAtPosition = ChessBoard.chessPiecePropertiesAtPosition(row,col)
                             if (piecePropertiesAtPosition[0] == 0 or piecePropertiesAtPosition[1]!=currColor) and clearPathToMoveToPosition(ChessBoard, currPosition,tarPosition):
                                 possibleMoves.append(tarPosition)
 
@@ -205,10 +205,10 @@ class ChessBoard:
         bqueen = Queen([7,3],'black')
         self.boardSpaces = [[wr1,wk1,wb1,wqueen,wking,wb2,wk2,wr2],
                             [wp1,wp2,wp3,wp4,wp5,wp6,wp7,wp8],
-                            np.zeros((8,),dtype=int),
-                            np.zeros((8,),dtype=int),
-                            np.zeros((8,),dtype=int),
-                            np.zeros((8,),dtype=int),
+                            [0,0,0,0,0,0,0,0],
+                            [0,0,0,0,0,0,0,0],
+                            [0,0,0,0,0,0,0,0],
+                            [0,0,0,0,0,0,0,0],
                             [bp1,bp2,bp3,bp4,bp5,bp6,bp7,bp8],
                             [br1,bk1,bb1,bqueen,bking,bb2,bk2,br2]]
         self.history = self.boardSpaces
@@ -219,14 +219,14 @@ class ChessBoard:
         return None
 
     def getPieceAtPosition(self,position):
-        return self.boardPosition[position[0]][position[1]]
+        return self.boardSpaces[position[0]][position[1]]
 
     def movePiece(self, startingPiecePosition, endingPiecePosition):
         #move the chess piece at starting Position to ending Position removing any taken piecePropertiesAtPosition
         endPiece = self.getPieceAtPosition(endingPiecePosition)
         startPiece = self.getPieceAtPosition(startingPiecePosition)
         if endPiece != 0 :
-            self._removePiece(endPiece, True)
+            self._removePiece(endPiece, deletePiece=True)
         self._addPiece(startPiece,endingPiecePosition)
         self._removePiece(startPiece)
         startPiece.boardPosition=endingPiecePosition
@@ -235,19 +235,22 @@ class ChessBoard:
     def _addPiece(self, chesspiece, position = None):
         if position == None:
             position= chesspiece.boardPosition
-        positionProperties = ChessPiecePropertiesAtPosition(self, position)
+
+        currBoard = self.boardSpaces
+        positionProperties = self.chessPiecePropertiesAtPosition(position)
         if positionProperties[0]:
             print('You must remove the current piece before adding a piece')
             return False
-        else
-            self.boardSpaces[position[0]][position[1]]=chesspiece
+        else:
+            self.boardSpaces[position[0]][position[1]]= chesspiece
+            if chesspiece.boardPosition != position :
+                chesspiece.boardPosition = position
             return True
 
-
-
-    def _removePiece(self, chesspiece, deletePiece = False):
-        currPosition = chesspiece.boardPosition
-        self.boardSpaces[position[0]][position[1]]= 0
+    def _removePiece(self, chesspiece, currPosition=None, deletePiece = False):
+        if currPosition == None :
+            currPosition = chesspiece.boardPosition
+        self.boardSpaces[currPosition[0]][currPosition[1]]= 0
         if deletePiece :
             del chesspiece
 
@@ -263,7 +266,7 @@ class ChessBoard:
         #store the current state of the board into history
         return None
 
-    def ChessPiecePropertiesAtPosition (self, position):
+    def chessPiecePropertiesAtPosition (self, position):
     #returns [pieceAtLocatin(0 no piece or 1 for existence), piece color as string ]
         #TODO look up better way to get objects out of nested lists
         row = self.boardSpaces[position[0]]
@@ -275,24 +278,37 @@ class ChessBoard:
 
     def _clearPathToMoveToPositionGivenDirection(self, startPosition, endPosition, xMove,yMove):
         #max 7 moves
+        tarPosition =[-1,-1]
         for step in range(1,8):
-            tarPosition[0] = startPosition[0]+ (step*xMove)
+            tarPosition[0] = startPosition[0]+ (step*yMove)
             tarPosition[1] = startPosition[1]+ (step*xMove)
             if tarPosition == endPosition:
                 return True
-            pieceExists, pieceColor = ChessPiecePropertiesAtPosition(self, tarPosition)
+            pieceExists, pieceColor = self.chessPiecePropertiesAtPosition(tarPosition)
             if pieceExists:
                 return False
 
 
     def clearPathToMoveToPosition(self, startPosition, endPosition):
     #returns true if path is clear of other pieces otherwise returns False
-        xMovement = endPosition[1] - startPostion[1]
+        xMovement = endPosition[1] - startPosition[1]
         yMovement = endPosition[0] - startPosition[0]
-        return _clearPathToMoveToPositionGivenDirection(self, startPosition, endPosition,_normalizeDirections(xMovement),_normalizeDirections(yMovement) )
+        return self._clearPathToMoveToPositionGivenDirection(startPosition, endPosition,_normalizeDirections(xMovement),_normalizeDirections(yMovement) )
 
+    def clearBoard(self):
+        for row in range(8):
+            for col in range(8):
+                tarPiece = self.getPieceAtPosition([row,col])
+                if tarPiece != 0:
+                    self._removePiece(tarPiece, deletePiece = True)
 
-
+    def destructor(self):
+        for row in range(8):
+            for col in range(8):
+                tarPiece = self.getPieceAtPosition([row,col])
+                if tarPiece != 0 :
+                    del tarPiece
+        del self
 
 
 
