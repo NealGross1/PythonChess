@@ -17,7 +17,7 @@ class Pawn(ChessPiece):
         if not(currColor =='black' or currColor =='white') :
             print ('invalid color was for target pawn:'+self.color)
             return None
-
+        #TODO double pawn step when pawn has not moved yet
         for row in range(8):
             for col in range(8):
                 tarPosition = [row,col]

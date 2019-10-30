@@ -169,9 +169,11 @@ class TestPawn(unittest.TestCase):
     def test_possibleMoves(self):
         pawnCenterOfBoard = Pawn([4,4], 'white')
         pawnBlackInfrontOfPawn = Pawn([2,4],'black')
+        pawnBlackInfrontOfPawn2 = Pawn([2,2],'black')
         newBoard = ChessBoard()
         newBoard._addPiece(pawnCenterOfBoard)
         newBoard._addPiece(pawnBlackInfrontOfPawn)
+        newBoard._addPiece(pawnBlackInfrontOfPawn2)
         #black movement
         tarPiece = newBoard.getPieceAtPosition([6,4])
         self.assertIsInstance(tarPiece,Pawn)
@@ -181,8 +183,8 @@ class TestPawn(unittest.TestCase):
         tarPiece = newBoard.getPieceAtPosition([1,3])
         self.assertIsInstance(tarPiece,Pawn)
         possibleMoves = tarPiece.getPossibleMoves(newBoard)
-        self.assertEqual(len(possibleMoves),2)
-        expectedMoves =[[2,4],[2,3]]
+        self.assertEqual(len(possibleMoves),3)
+        expectedMoves =[[2,4],[2,3],[2,2]]
         for i in range(len(possibleMoves)):
             self.assertIn(expectedMoves[i],possibleMoves)
         #off the board movement
@@ -195,6 +197,9 @@ class TestPawn(unittest.TestCase):
 
 class TestKnight(unittest.TestCase):
     def test_possibleMoves(self):
+        #all 8 knight moves
+        #moves off the board and allied pieces blocking
+
         self.assertTrue(False,'incomplete')
 
 if __name__ == '__main__':
