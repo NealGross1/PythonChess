@@ -195,14 +195,14 @@ class ChessBoard:
         bp6 = Pawn([6,5],'black')
         bp7 = Pawn([6,6],'black')
         bp8 = Pawn([6,7],'black')
-        wr1 = Rook([7,0],'black')
-        wr2 = Rook([7,7],'black')
-        wb1 = Bishop([7,2],'black')
-        wb2 = Bishop([7,5],'black')
-        wk1 = Knight([7,1],'black')
-        wk2 = Knight([7,6],'black')
-        wking = King([7,4],'black')
-        wQueen = Queen([7,3],'black')
+        br1 = Rook([7,0],'black')
+        br2 = Rook([7,7],'black')
+        bb1 = Bishop([7,2],'black')
+        bb2 = Bishop([7,5],'black')
+        bk1 = Knight([7,1],'black')
+        bk2 = Knight([7,6],'black')
+        bking = King([7,4],'black')
+        bqueen = Queen([7,3],'black')
         self.boardSpaces = [[wr1,wk1,wb1,wqueen,wking,wb2,wk2,wr2],
                             [wp1,wp2,wp3,wp4,wp5,wp6,wp7,wp8],
                             np.zeros((8,),dtype=int),
@@ -211,33 +211,45 @@ class ChessBoard:
                             np.zeros((8,),dtype=int),
                             [bp1,bp2,bp3,bp4,bp5,bp6,bp7,bp8],
                             [br1,bk1,bb1,bqueen,bking,bb2,bk2,br2]]
-        self.history = [[wr1,wk1,wb1,wqueen,wking,wb2,wk2,wr2],
-                            [wp1,wp2,wp3,wp4,wp5,wp6,wp7,wp8],
-                            np.zeros((8,),dtype=int),
-                            np.zeros((8,),dtype=int),
-                            np.zeros((8,),dtype=int),
-                            np.zeros((8,),dtype=int),
-                            [bp1,bp2,bp3,bp4,bp5,bp6,bp7,bp8],
-                            [br1,bk1,bb1,bqueen,bking,bb2,bk2,br2]]
+        self.history = self.boardSpaces
 
     def allValidMoves (self):
         #compile a list of each piece that can move and what position
         # potentially a starting_position with a list of ending positions
         return None
 
+    def getPieceAtPosition(self,position):
+        return self.boardPosition[position[0]][position[1]]
+
     def movePiece(self, startingPiecePosition, endingPiecePosition):
         #move the chess piece at starting Position to ending Position removing any taken piecePropertiesAtPosition
+        endPiece = self.getPieceAtPosition(endingPiecePosition)
+        startPiece = self.getPieceAtPosition(startingPiecePosition)
+        if endPiece != 0 :
+            self._removePiece(endPiece, True)
+        self._addPiece(startPiece,endingPiecePosition)
+        self._removePiece(startPiece)
+        startPiece.boardPosition=endingPiecePosition
         #TODO castling moves
-        return None
 
-    def _addPiece(self, chesspiece, Position = None):
-        if Position == None:
-            Position= chesspiece.boardPosition
-        #TODO add piece to board
+    def _addPiece(self, chesspiece, position = None):
+        if position == None:
+            position= chesspiece.boardPosition
+        positionProperties = ChessPiecePropertiesAtPosition(self, position)
+        if positionProperties[0]:
+            print('You must remove the current piece before adding a piece')
+            return False
+        else
+            self.boardSpaces[position[0]][position[1]]=chesspiece
+            return True
 
-    def _removePiece(self, chesspiece):
+
+
+    def _removePiece(self, chesspiece, deletePiece = False):
         currPosition = chesspiece.boardPosition
-        #TODO remove piece from board
+        self.boardSpaces[position[0]][position[1]]= 0
+        if deletePiece :
+            del chesspiece
 
     def isCheck(self):
         #TODO evaluate the current state of the board for Check condiitions
