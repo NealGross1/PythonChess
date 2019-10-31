@@ -13,8 +13,9 @@ _setPlayer(self, playerPosition, Player)
 promptPlayerToMove(self)
 promptToSetPlayer(self, playerPosition)
 promptPlayerCheck(self)
-promptPlayerCheckMate(self)
+promptWinOrLoss(self)
 promptPlayerToRestart(self)
+updateDisplay(self)
 
 }
 

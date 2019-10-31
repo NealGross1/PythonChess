@@ -1,0 +1,22 @@
+@startuml
+skinparam classFontSize 20
+skinparam classAttributeFontSize 17
+
+class "ChessPlayer" as Player {
+color : string
+--
+chooseMove(self,ChessBoard): do nothing, random by default?
+}
+
+class "HumanPlayer" as HPlayer {
+chooseMove(self,ChessBoard): GUI prompt
+notifyInCheck(self): GUI prompt
+notifyWinOrLoss(self): GUI prompt
+}
+
+class "ComputerPlayer" as CPUPlayer{
+chooseMove(self,ChessBoard): random generated move --> later AI
+}
+Player <|-- HPlayer
+Player <|-- CPUPlayer
+@enduml
