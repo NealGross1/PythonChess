@@ -204,10 +204,47 @@ class ChessBoard:
                             [br1,bk1,bb1,bqueen,bking,bb2,bk2,br2]]
         self.history = self.boardSpaces
 
-    def allValidMoves (self):
-        #compile a list of each piece that can move and what position
-        # potentially a starting_position with a list of ending positions
-        return None
+    def allValidMoves (self,color):
+        #as long as the move is a possible move and does not cause check, or takes the player out of check, its a valid move
+        validMoves=[]
+        possibleMoves=self.getPossibleMoves(color)
+        for i in range(len(possibleMoves)):
+            validPieceMoves=[]
+            for j in range(len(possibleMoves[i][1])):
+                causesCheck = self.movePutsPlayerIntoCheck(possibleMoves[i][0].boardPosition, possibleMoves[i][1][j])
+                if causesCheck == False:
+                    validPieceMoves.append(possibleMoves[i][1][j])
+            validMoves.append([possibleMoves[i][0],validPieceMoves])
+
+        return validMoves
+
+    def getPossibleMoves(self,color):
+        allMoves=[]
+        for row in range(8):
+            for col in range(8):
+                isPiece, tarColor = self.chessPiecePropertiesAtPosition([row,col])
+                if isPiece and tarColor == color :
+                    tarPiece = self.getPieceAtPosition([row,col])
+                    possibleMoves = tarPiece.getPossibleMoves(self)
+                    allMoves.append([tarPiece,possibleMoves])
+        return allMoves
+
+    def movePutsPlayerIntoCheck(self,color,startPosition,endPosition):
+        copiedBoard = self.copyBoard()
+        copiedBoard.movePiece(startPosition,endPosition)
+        isInCheck = copiedBoard.isCheck(color)
+        del copiedBoard
+        return isInCheck
+
+    def copyBoard(Self):
+        newBoard = Board()
+        newBoard.clearBoard()
+        for row in range(8):
+            for col in range(8):
+                tar = self.getPieceAtPosition([row,col])
+                newBoard.boardSpaces[row][col]=tar
+        return newBoard
+
 
     def getPieceAtPosition(self,position):
         return self.boardSpaces[position[0]][position[1]]
@@ -218,9 +255,8 @@ class ChessBoard:
         startPiece = self.getPieceAtPosition(startingPiecePosition)
         if endPiece != 0 :
             self._removePiece(endPiece, deletePiece=True)
-        self._addPiece(startPiece,endingPiecePosition)
         self._removePiece(startPiece)
-        startPiece.boardPosition=endingPiecePosition
+        self._addPiece(startPiece,endingPiecePosition)
         #TODO castling moves
 
     def _addPiece(self, chesspiece, position = None):
@@ -245,11 +281,26 @@ class ChessBoard:
         if deletePiece :
             del chesspiece
 
-    def isCheck(self):
-        #TODO evaluate the current state of the board for Check condiitions
-        return False
+    def isCheck(self,color):
+        #find king of given color and if it's position is in the possible moves of opposite color then check
+        isCheck = False
+        for row in range(8):
+            for col in range(8):
+                tarKing = self.getPieceAtPosition([row,col])
+                if isinstance(tarKing,King):
+                    break
+        if color == 'white':
+            possibleEnemyMoves=self.getPossibleMoves('black')
+        else:
+            possibleEnemyMoves=self.getPossibleMoves('white')
 
-    def isCheckMate(self):
+        for i in range(len(possibleEnemyMoves)):
+            if tarKing.boardPosition in possibleEnemyMoves[i][1] :
+                return True
+
+        return isCheck
+
+    def isCheckMate(self, color):
         #TODO evaluate the current state of the board for Check Mate condiitions
         return False
 
