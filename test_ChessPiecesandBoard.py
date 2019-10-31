@@ -194,13 +194,77 @@ class TestPawn(unittest.TestCase):
         newBoard._addPiece(tarPiece,[7,7])
         possibleMoves = tarPiece.getPossibleMoves(newBoard)
         self.assertEqual(possibleMoves, [])
+        #blocked by piece
+        newBoard._addPiece(pawnBlackInfrontOfPawn,[5,0])
+        tarPiece = newBoard.getPieceAtPosition([6,0])
+        possibleMoves = tarPiece.getPossibleMoves(newBoard)
+        self.assertEqual(possibleMoves, [])
+        newBoard.destructor()
 
 class TestKnight(unittest.TestCase):
     def test_possibleMoves(self):
+        newBoard=ChessBoard()
+        newBoard.clearBoard()
+        testKnight = Knight([4,4],'white')
+        newBoard._addPiece(testKnight)
         #all 8 knight moves
+        expectedMoves=[[6,3],[6,5],[5,2],[5,6],[3,2],[3,6],[2,3],[2,5]]
+        actualMoves = testKnight.getPossibleMoves(newBoard)
+        self.assertEqual(len(actualMoves),len(expectedMoves))
+        for i in range(len(expectedMoves)):
+            self.assertIn(expectedMoves[i],actualMoves)
         #moves off the board and allied pieces blocking
+        newBoard.destructor()
+        newBoard = newBoard=ChessBoard()
+        testKnight = Knight([5,7],'white')
+        testPawn = Pawn([3,6],'white')
+        newBoard._addPiece(testKnight)
+        newBoard._addPiece(testPawn)
+        actualMoves = testKnight.getPossibleMoves(newBoard)
+        expectedMoves=[[7,6],[6,5],[4,5]]
+        self.assertEqual(len(actualMoves),len(expectedMoves))
+        for i in range(len(expectedMoves)):
+            self.assertIn(expectedMoves[i],actualMoves)
+        newBoard.destructor()
 
-        self.assertTrue(False,'incomplete')
+class TestBishop(unittest.TestCase):
+    def test_possibleMoves(self):
+        newBoard=ChessBoard()
+        #at position 4,6 Bishop can potentially move off the board to the right, and goes through multiple enemies and allies on the left
+        testBishop = Bishop([4,6],'white')
+        newBoard._addPiece(testBishop)
+        actualMoves = testBishop.getPossibleMoves(newBoard)
+        expectedMoves = [[6,4],[5,5],[5,7],[3,5],[3,7],[2,4]]
+        self.assertEqual(len(actualMoves), len(expectedMoves))
+        for i in range(len(expectedMoves)):
+            self.assertIn(expectedMoves[i],actualMoves)
+
+class TestQueen(unittest.TestCase):
+    def test_possibleMoves(self):
+        newBoard=ChessBoard()
+        blockingTestPawn = Pawn([4,2],'white')
+        testQueen = Queen([4,6],'white')
+        newBoard._addPiece(testQueen)
+        newBoard._addPiece(blockingTestPawn)
+        actualMoves = testQueen.getPossibleMoves(newBoard)
+        expectedMoves = [[6,4],[5,5],[5,7],[3,5],[3,7],[2,4],[4,3],[4,4],[4,5],[4,7],[6,6],[5,6],[3,6],[2,6]]
+        self.assertEqual(len(actualMoves), len(expectedMoves))
+        for i in range(len(expectedMoves)):
+            self.assertIn(expectedMoves[i],actualMoves)
+
+class TestRook(unittest.TestCase):
+    def test_possibleMoves(self):
+        newBoard=ChessBoard()
+        blockingTestPawn = Pawn([4,2],'white')
+        testRook = Rook([4,6],'white')
+        newBoard._addPiece(testRook)
+        newBoard._addPiece(blockingTestPawn)
+        actualMoves = testRook.getPossibleMoves(newBoard)
+        expectedMoves = [[4,3],[4,4],[4,5],[4,7],[6,6],[5,6],[3,6],[2,6]]
+        self.assertEqual(len(actualMoves), len(expectedMoves))
+        for i in range(len(expectedMoves)):
+            self.assertIn(expectedMoves[i],actualMoves)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -98,9 +98,9 @@ class Bishop(ChessPiece):
             for col in range(8):
                 tarPosition = [row,col]
                 #Bisops move diagonally xMove == yMove
-                if (abs(tarPosition[0] - curPosition[0]) == abs(tarPosition[1] - curPosition[1])) and tarPosition != currPosition:
+                if (abs(tarPosition[0] - currPosition[0]) == abs(tarPosition[1] - currPosition[1])) and tarPosition != currPosition:
                     piecePropertiesAtPosition = ChessBoard.chessPiecePropertiesAtPosition([row,col])
-                    if (piecePropertiesAtPosition[0] == 0 or piecePropertiesAtPosition[1]!=currColor) and clearPathToMoveToPosition(ChessBoard, currPosition,tarPosition):
+                    if (piecePropertiesAtPosition[0] == 0 or piecePropertiesAtPosition[1]!=currColor) and ChessBoard.clearPathToMoveToPosition(currPosition,tarPosition):
                         possibleMoves.append(tarPosition)
 
         return possibleMoves
@@ -119,18 +119,18 @@ class Queen(ChessPiece):
                     for col in range(8):
                         tarPosition = [row,col]
                         #Quens can move in the 4 dialgonal directions
-                        if (abs(tarPosition[0] - curPosition[0]) == abs(tarPosition[1] - curPosition[1])) and tarPosition != currPosition:
+                        if (abs(tarPosition[0] - currPosition[0]) == abs(tarPosition[1] - currPosition[1])) and tarPosition != currPosition:
                             piecePropertiesAtPosition = ChessBoard.chessPiecePropertiesAtPosition([row,col])
-                            if (piecePropertiesAtPosition[0] == 0 or piecePropertiesAtPosition[1]!=currColor) and clearPathToMoveToPosition(ChessBoard, currPosition,tarPosition):
+                            if (piecePropertiesAtPosition[0] == 0 or piecePropertiesAtPosition[1]!=currColor) and ChessBoard.clearPathToMoveToPosition(currPosition,tarPosition):
                                 possibleMoves.append(tarPosition)
 
                         #Queens can move up down left and right
-                        if (((tarPosition[0] == curPosition[0] and tarPosition[1] != curPosition[1])
-                            or (tarPosition[0] != curPosition[0] and tarPosition[1] == curPosition[1]))
+                        if (((tarPosition[0] == currPosition[0] and tarPosition[1] != currPosition[1])
+                            or (tarPosition[0] != currPosition[0] and tarPosition[1] == currPosition[1]))
                             and tarPosition != currPosition):
 
                             piecePropertiesAtPosition = ChessBoard.chessPiecePropertiesAtPosition([row,col])
-                            if (piecePropertiesAtPosition[0] == 0 or piecePropertiesAtPosition[1]!=currColor) and clearPathToMoveToPosition(ChessBoard, currPosition,tarPosition):
+                            if (piecePropertiesAtPosition[0] == 0 or piecePropertiesAtPosition[1]!=currColor) and ChessBoard.clearPathToMoveToPosition(currPosition,tarPosition):
                                 possibleMoves.append(tarPosition)
 
                 return possibleMoves
@@ -149,12 +149,12 @@ class Rook(ChessPiece):
                     for col in range(8):
                         tarPosition = [row,col]
                         #Rooks move up down left and right
-                        if (((tarPosition[0] == curPosition[0] and tarPosition[1] != curPosition[1])
-                            or (tarPosition[0] != curPosition[0] and tarPosition[1] == curPosition[1]))
+                        if (((tarPosition[0] == currPosition[0] and tarPosition[1] != currPosition[1])
+                            or (tarPosition[0] != currPosition[0] and tarPosition[1] == currPosition[1]))
                             and tarPosition != currPosition):
 
                             piecePropertiesAtPosition = ChessBoard.chessPiecePropertiesAtPosition([row,col])
-                            if (piecePropertiesAtPosition[0] == 0 or piecePropertiesAtPosition[1]!=currColor) and clearPathToMoveToPosition(ChessBoard, currPosition,tarPosition):
+                            if (piecePropertiesAtPosition[0] == 0 or piecePropertiesAtPosition[1]!=currColor) and ChessBoard.clearPathToMoveToPosition( currPosition,tarPosition):
                                 possibleMoves.append(tarPosition)
 
                 return possibleMoves
