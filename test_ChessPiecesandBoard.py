@@ -166,6 +166,7 @@ class TestChessBoard(unittest.TestCase):
             self.assertTrue(clearPath)
 
 class TestPawn(unittest.TestCase):
+    print("running pawn tests")
     def test_possibleMoves(self):
         pawnCenterOfBoard = Pawn([4,4], 'white')
         pawnBlackInfrontOfPawn = Pawn([2,4],'black')
@@ -202,6 +203,7 @@ class TestPawn(unittest.TestCase):
         newBoard.destructor()
 
 class TestKnight(unittest.TestCase):
+    print("running knight tests")
     def test_possibleMoves(self):
         newBoard=ChessBoard()
         newBoard.clearBoard()
@@ -228,6 +230,7 @@ class TestKnight(unittest.TestCase):
         newBoard.destructor()
 
 class TestBishop(unittest.TestCase):
+    print("running bishop tests")
     def test_possibleMoves(self):
         newBoard=ChessBoard()
         #at position 4,6 Bishop can potentially move off the board to the right, and goes through multiple enemies and allies on the left
@@ -240,7 +243,8 @@ class TestBishop(unittest.TestCase):
             self.assertIn(expectedMoves[i],actualMoves)
 
 class TestQueen(unittest.TestCase):
-    def test_possibleMoves(self):
+    print("running queen tests")
+    def test_possibleMoves(self): 
         newBoard=ChessBoard()
         blockingTestPawn = Pawn([4,2],'white')
         testQueen = Queen([4,6],'white')
@@ -253,6 +257,7 @@ class TestQueen(unittest.TestCase):
             self.assertIn(expectedMoves[i],actualMoves)
 
 class TestRook(unittest.TestCase):
+    print("running rook tests")
     def test_possibleMoves(self):
         newBoard=ChessBoard()
         blockingTestPawn = Pawn([4,2],'white')
