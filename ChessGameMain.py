@@ -6,11 +6,9 @@ import sys
 #start game and GUI
 Game = ChessBoard()
 GUI = ChessGUI() 
-boardDescription = getBoardDescription(Game)     
-validSquares = []
-GUI.Draw(boardDescription,validSquares)
+
 GameIsOver = False
-currentPlayer = 'white'
+currentPlayerColor = 'white'
 currentCoordinates = (-1,-1)
 targetPiece = None
 movePiece = None
@@ -18,103 +16,116 @@ moves = []
 listMoves = []
 Debug = False
 
-while not GameIsOver:
 
-#player selection
-#Alternate Turns
-#announce check or check mate --> end Game
+class ChessGameInterface:
+    def __init__(self, startingColor, chessBoard, GUI):
+        self.currentPlayer = startingColor
+        self.selectedPiece = None
+        self.selectedPieceCoordinates = [-1,-1]
+        self.clickedPiece = None
+        self.gameIsOver = False
+        self.selectedPieceMoves = []
+        self.GUI = GUI
+        self.Game = chessBoard
+        self.currentPlayerInCheck = False
+        self.checkMoves = []
+
+    def updateUI(self):
+        boardDescription = getBoardDescription(self.Game)
+
+        if self.selectedPiece == None or type(self.selectedPiece) == int:
+            self.GUI.Draw(boardDescription,[])
+            return
+
+        self.selectedPieceMoves = []
+        listMoves = self.selectedPiece.getPossibleMoves(self.Game)
+        for move in listMoves:
+            self.selectedPieceMoves.append(tuple(move))  
+
+        self.GUI.Draw(boardDescription,self.selectedPieceMoves)
+
+    def nextTurn(self):
+        self.selectedPiece = None
+        self.selectedPieceMoves = []
+        self.selectedPieceCoordinates = []
+        self.checkMoves = []
+        #next players turn 
+        if self.currentPlayer == 'white':
+            self.currentPlayer = 'black'
+        else:
+            self.currentPlayer = 'white'
+        self.currentPlayerInCheck = self.Game.isCheck(self.currentPlayer)
+        if self.currentPlayerInCheck:
+            for move in self.Game.movesToGetOutofCheck(self.currentPlayer): 
+                self.checkMoves.append(tuple(move)) 
+        else: 
+            self.checkMoves = []
+        
+        self.updateUI()
+
+
+
+GameInterface = ChessGameInterface('white', Game, GUI)
+GameInterface.updateUI()
+
+while not GameInterface.gameIsOver:
     for event in pygame.event.get():
         ##CLICK EVENT##
         if event.type == 5:
-            if Debug:
-                print("click event")
             mouseCoordinates = pygame.mouse.get_pos()
-            RowCol = GUI.ConvertToChessCoords(mouseCoordinates)
-            #ignore clicks outside the board
+            RowCol = GameInterface.GUI.ConvertToChessCoords(mouseCoordinates)
             ##SELECT SAME PIECE AGAIN##
-            if currentCoordinates == RowCol:
-                if Debug:
-                    print("same piece")
+            if GameInterface.selectedPieceCoordinates == RowCol:
                 #do nothing
-                pass
+                continue
 
             ##SELECT PIECE ON BOARD##
             elif not (RowCol[0] < 0 or RowCol[0] >7 or RowCol[1]<0 or RowCol[1] >7):
-                if Debug:
-                    print ("clicked on board")
-                ##SELECT A DIFFERENT PIECE##
-                if currentCoordinates != RowCol:
-                    ##IN POSSIBLE MOVES##
-                    if Debug:
-                        print ("clicked different piece")
-                    if RowCol in moves and not (type(targetPiece) == int or targetPiece == None):
-                        if Debug:
-                            print ("valid move")
-                        movePiece = Game.getPieceAtPosition(RowCol)
-                        ##ENEMY OR EMPTY SPACE## 
-                        if type(movePiece) == int: 
-                            pass
-                        elif not (movePiece.color == currentPlayer) :
-                            pass
+                GameInterface.clickedPiece = GameInterface.Game.getPieceAtPosition(RowCol)
+                ##HAVE A PREVIOUSLY SELECTED PIECE##
+                if not type(GameInterface.selectedPiece) == int or GameInterface.selectedPiece == None:
+                    ##MOVE TO GET OUT OF CHECK
+                    if GameInterface.currentPlayerInCheck: 
+                        ##MAKE MOVE TO GET OUT OF CHECK
+                        print (RowCol)
+                        print (GameInterface.checkMoves)
+                        if RowCol in GameInterface.checkMoves:
+                            GameInterface.Game.movePiece(GameInterface.selectedPieceCoordinates, RowCol)
+                            GameInterface.nextTurn()
+                        elif type(GameInterface.clickedPiece) != int and GameInterface.clickedPiece != None:
+                            if GameInterface.clickedPiece.color == GameInterface.currentPlayer:
+                                GameInterface.selectedPiece = GameInterface.clickedPiece
+                                GameInterface.selectedPieceCoordinates = RowCol
+                                GameInterface.updateUI()
+                        ##INVALID MOVE##
                         else:
-                            #targeting own piece?
-                            continue 
+                            ##TODO NOTIFY USER##
+                            continue
+                    ##NOT IN CHECK MAKE MOVE IF YOUR PIECE##
+                    elif RowCol in GameInterface.selectedPieceMoves:
+                        ##CANT MOVE YOURSELF INTO CHECK##
+                        putsIntoCheck = GameInterface.Game.movePutsPlayerIntoCheck(GameInterface.currentPlayer,GameInterface.selectedPieceCoordinates, RowCol)
+                        if putsIntoCheck:
+                            #tell user
+                            print ("you can't move yourself into check")
+                            continue
+                        GameInterface.Game.movePiece(GameInterface.selectedPieceCoordinates, RowCol)
+                        GameInterface.nextTurn()
+                    ##NOT IN CHECK SELECT EMPTY OR OWN PIECE##
+                    elif type(GameInterface.clickedPiece) != int or GameInterface.clickedPiece == None:
+                        if GameInterface.clickedPiece.color == GameInterface.currentPlayer:
+                            GameInterface.selectedPiece = GameInterface.clickedPiece
+                            GameInterface.selectedPieceCoordinates = RowCol
+                            GameInterface.updateUI()
 
-                        #call game function to make move 
-                        Game.movePiece(currentCoordinates, RowCol)
-                        #update board GUI based on board
-                        GUI.Draw(getBoardDescription(Game),[])
-                        listMoves =[]
-                        moves=[]
-                        #next players turn 
-                        if currentPlayer == 'white':
-                            currentPlayer = 'black'
-                        else: 
-                            currentPlayer = 'white'
-                        continue
-                    ##NOT A POSSIBLE MOVE##
-                    else:
-                        if Debug:
-                            print ("not a valid move")
-                        currentCoordinates = RowCol
-                        targetPiece = Game.getPieceAtPosition(RowCol)
-                        ##NOT ENEMY PIECE##
-                        if not type(targetPiece) == int or targetPiece == None:
-                            if Debug:
-                                print ("selected chess piece")
-                            if targetPiece.color == currentPlayer: 
-                                if Debug:
-                                   print ("chess curr player")
-                                listMoves=[]
-                                listMoves = targetPiece.getPossibleMoves(Game)
-                                moves = []
-                                for l in listMoves:
-                                    moves.append(tuple(l))                         
-                        ##CLEAR PREVIOUS SELECTION
-                        else:
-                            if Debug:
-                                print ("clearing selection")
-                            currentCoordinates = (-1,-1)
-                            targetPiece = None
-                            movePiece = None
-                            moves = []
-                            listMoves = []
-                        ##UPDATE UI##
-                        boardDescription = getBoardDescription(Game) 
-                        GUI.Draw(getBoardDescription(Game),moves)
-                #CLICKING ON SAME PIECE
-                else:
-                    boardDescription = getBoardDescription(Game)     
-                    validSquares = []
-                    GUI.Draw(boardDescription,validSquares)
-            ##CLICK NOT ON BOARD##
-            else:
-                boardDescription = getBoardDescription(Game)     
-                validSquares = []
-                GUI.Draw(boardDescription,validSquares)
-        ##ESCAPE KEY KEYBOARD EVENT##
+                ##DON'T HAVE A SELECTED PIECE##
+                elif type(GameInterface.clickedPiece) != int or GameInterface.clickedPiece == None:
+                    if GameInterface.clickedPiece.color == GameInterface.currentPlayer:
+                        #make the piece selected 
+                        GameInterface.selectedPiece = GameInterface.clickedPiece
+                        GameInterface.selectedPieceCoordinates = RowCol
+                        GameInterface.updateUI()
+
         if event.type == 3:
-            GameIsOver = True
-
-
-     #announce winner play again 
+            print ('game is ending')
+            GameInterface.gameIsOver = True

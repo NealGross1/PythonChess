@@ -9,8 +9,9 @@ class ChessPiece:
 
     def getPossibleMoves(self, ChessBoard):
         return []
-
-
+    
+    
+    
 class Pawn(ChessPiece):
     def getPossibleMoves(self, ChessBoard):
         possibleMoves = []
@@ -40,6 +41,10 @@ class Pawn(ChessPiece):
 
         return possibleMoves
 
+    def copyPiece(self):
+        copiedPawn = Pawn(self.boardPosition,self.color)
+        copiedPawn.hasMoved = self.hasMoved
+        return copiedPawn
 
 class Knight(ChessPiece):
     def getPossibleMoves(self, ChessBoard):
@@ -68,6 +73,9 @@ class Knight(ChessPiece):
 
         return possibleMoves
 
+    def copyPiece(self):
+        copiedKnight = Knight(self.boardPosition,self.color)
+        return copiedKnight
 
 class King(ChessPiece):
     def getPossibleMoves(self, ChessBoard):
@@ -93,6 +101,10 @@ class King(ChessPiece):
 
         return possibleMoves
 
+    def copyPiece(self):
+        copiedKing = King(self.boardPosition,self.color)
+        copiedKing.hasMoved = self.hasMoved
+        return copiedKing
 
 class Bishop(ChessPiece):
     def getPossibleMoves(self, ChessBoard):
@@ -115,7 +127,10 @@ class Bishop(ChessPiece):
                         possibleMoves.append(tarPosition)
 
         return possibleMoves
-
+    
+    def copyPiece(self):
+            copiedBishop = Bishop(self.boardPosition,self.color)
+            return copiedBishop
 
 class Queen(ChessPiece):
     def getPossibleMoves(self, ChessBoard):
@@ -149,6 +164,9 @@ class Queen(ChessPiece):
 
         return possibleMoves
 
+    def copyPiece(self):
+            copiedQueen = Queen(self.boardPosition,self.color)
+            return copiedQueen
 
 class Rook(ChessPiece):
     def getPossibleMoves(self, ChessBoard):
@@ -175,6 +193,9 @@ class Rook(ChessPiece):
 
         return possibleMoves
 
+    def copyPiece(self):
+        copiedRook = Rook(self.boardPosition,self.color)
+        return copiedRook
 
 class ChessBoard:
     def __init__(self):
@@ -252,16 +273,19 @@ class ChessBoard:
         copiedBoard = self.copyBoard()
         copiedBoard.movePiece(startPosition, endPosition)
         isInCheck = copiedBoard.isCheck(color)
-        del copiedBoard
+        copiedBoard.destructor()
         return isInCheck
 
     def copyBoard(self):
-        newBoard = Board()
+        newBoard = ChessBoard()
         newBoard.clearBoard()
         for row in range(8):
             for col in range(8):
                 tar = self.getPieceAtPosition([row, col])
-                newBoard.boardSpaces[row][col] = tar
+                if not type(tar) == int:
+                    copiedTarget = tar.copyPiece()
+                    newBoard.boardSpaces[row][col] = copiedTarget
+
         return newBoard
 
     def getPieceAtPosition(self, position):
@@ -305,6 +329,9 @@ class ChessBoard:
         # TODO castling moves
 
     def _addPiece(self, chesspiece, position=None):
+        if type(chesspiece) == int:
+            return chesspiece
+
         if position == None:
             position = chesspiece.boardPosition
 
@@ -320,6 +347,8 @@ class ChessBoard:
             return True
 
     def _removePiece(self, chesspiece, currPosition=None, deletePiece=False):
+        if type(chesspiece) == int:
+            return 
         if currPosition == None:
             currPosition = chesspiece.boardPosition
         self.boardSpaces[currPosition[0]][currPosition[1]] = 0
@@ -329,11 +358,18 @@ class ChessBoard:
     def isCheck(self, color):
         # find king of given color and if it's position is in the possible moves of opposite color then check
         isCheck = False
+        found = False
         for row in range(8):
             for col in range(8):
                 tarKing = self.getPieceAtPosition([row, col])
-                if isinstance(tarKing, King):
+                if isinstance(tarKing,King):
+                    if tarKing.color == color:
+                        found = True
+                if found:
                     break
+            if found:
+                break 
+
         if color == 'white':
             possibleEnemyMoves = self.getPossibleMoves('black')
         else:
@@ -344,6 +380,25 @@ class ChessBoard:
                 return True
 
         return isCheck
+    
+    def movesToGetOutofCheck (self, color):
+        movesOutOfCheck = []
+        if color == 'white':
+            possibleMoves = self.getPossibleMoves('white')
+        else:
+            possibleMoves = self.getPossibleMoves('black')
+
+        for moves in possibleMoves:
+            startLocation = moves[0].boardPosition
+            if len(moves[1]) > 0:
+                for endLocation in moves[1]:
+                    if not (endLocation in movesOutOfCheck):
+                        isCheck = self.movePutsPlayerIntoCheck(color, startLocation, endLocation)
+                        if not(isCheck):
+                            movesOutOfCheck.append(endLocation)
+
+        return movesOutOfCheck
+
 
     def isCheckMate(self, color):
         # TODO evaluate the current state of the board for Check Mate condiitions
@@ -386,7 +441,8 @@ class ChessBoard:
         for row in range(8):
             for col in range(8):
                 tarPiece = self.getPieceAtPosition([row, col])
-                if tarPiece != 0:
+                if not type(tarPiece) == int:
+                    #print ( type(tarPiece))
                     self._removePiece(tarPiece, deletePiece=True)
 
     def destructor(self):
