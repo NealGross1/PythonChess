@@ -21,9 +21,7 @@ class Pawn(ChessPiece):
         if not(currColor == 'black' or currColor == 'white'):
             print('invalid color was given for target pawn:'+self.color)
             return None
-        # TODO double pawn step when pawn has not moved yet
-        #for row in range(8):
-            #for col in range(8):
+
         if currColor == 'black':
             movementDirection = 1
         else:
@@ -31,13 +29,12 @@ class Pawn(ChessPiece):
         
         if currPosition[1] - 1 >= 0 and currPosition[1] + 1 <= 7  and currPosition[0]+ movementDirection >= 0 and currPosition[0]+ movementDirection <= 7: 
             possibleKillMoves =[[currPosition[0]+ movementDirection, currPosition[1] + 1], [currPosition[0]+ movementDirection, currPosition[1] - 1]] 
-        elif currPosition[1] + 1 <= 7  and currPosition[0]+ movementDirection >= 0 and currPosition[0]+ movementDirection <= 7:
-            possibleKillMoves =[ [currPosition[0]+ movementDirection, currPosition[1] - 1]] 
-        elif currPosition[1] - 1 >= 0 and currPosition[0]+ movementDirection >= 0 and currPosition[0]+ movementDirection <= 7: 
-            possibleKillMoves =[[currPosition[0]+ movementDirection, currPosition[1] + 1]]
+        elif currPosition[1] + 1 <= 6  and currPosition[0]+ movementDirection >= 0 and currPosition[0]+ movementDirection <= 7:
+            possibleKillMoves =[ [currPosition[0]+ movementDirection, currPosition[1] + 1]] 
+        elif currPosition[1] - 1 > 0 and currPosition[0]+ movementDirection >= 0 and currPosition[0]+ movementDirection <= 7: 
+            possibleKillMoves =[[currPosition[0]+ movementDirection, currPosition[1] - 1]]
         else: 
             possibleKillMoves =[]
-
 
         if self.hasMoved and currPosition[0]+ movementDirection >= 0 and currPosition[0]+ movementDirection <= 7:
             possibleMovements = [[currPosition[0] + movementDirection, currPosition[1]]]
@@ -55,7 +52,8 @@ class Pawn(ChessPiece):
         for tarPosition in possibleMovements:
           if ChessBoard.clearPathToMoveToPosition(currPosition, tarPosition):
               possibleMoves.append(tarPosition)
-                        
+
+                
         return possibleMoves
 
     def copyPiece(self):
