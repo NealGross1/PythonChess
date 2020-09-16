@@ -61,6 +61,8 @@ class ChessGameInterface:
         else: 
             self.checkMoves = []
         
+        if self.currentPlayerInCheck and len(self.checkMoves) == 0:
+            self.gameIsOver = True
         self.updateUI()
 
 
@@ -87,11 +89,16 @@ while not GameInterface.gameIsOver:
                     ##MOVE TO GET OUT OF CHECK
                     if GameInterface.currentPlayerInCheck: 
                         ##MAKE MOVE TO GET OUT OF CHECK
-                        print (RowCol)
-                        print (GameInterface.checkMoves)
                         if RowCol in GameInterface.checkMoves:
-                            GameInterface.Game.movePiece(GameInterface.selectedPieceCoordinates, RowCol)
-                            GameInterface.nextTurn()
+                            putsIntoCheck = GameInterface.Game.movePutsPlayerIntoCheck(GameInterface.currentPlayer,GameInterface.selectedPieceCoordinates, RowCol)
+                            if putsIntoCheck:
+                                print ('invalid move to:', RowCol)
+                                print ('possible moves are:',  GameInterface.checkMoves)
+                                ##TODO NOTIFY USER##
+                                continue
+                            else:
+                                GameInterface.Game.movePiece(GameInterface.selectedPieceCoordinates, RowCol)
+                                GameInterface.nextTurn()
                         elif type(GameInterface.clickedPiece) != int and GameInterface.clickedPiece != None:
                             if GameInterface.clickedPiece.color == GameInterface.currentPlayer:
                                 GameInterface.selectedPiece = GameInterface.clickedPiece
@@ -99,8 +106,11 @@ while not GameInterface.gameIsOver:
                                 GameInterface.updateUI()
                         ##INVALID MOVE##
                         else:
+                            print ('invalid move to:', RowCol)
+                            print ('possible moves are:',  GameInterface.checkMoves)
                             ##TODO NOTIFY USER##
                             continue
+
                     ##NOT IN CHECK MAKE MOVE IF YOUR PIECE##
                     elif RowCol in GameInterface.selectedPieceMoves:
                         ##CANT MOVE YOURSELF INTO CHECK##
@@ -129,3 +139,5 @@ while not GameInterface.gameIsOver:
         if event.type == 3:
             print ('game is ending')
             GameInterface.gameIsOver = True
+
+print ('has won the game!')
