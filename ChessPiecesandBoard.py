@@ -15,6 +15,8 @@ class ChessPiece:
 class Pawn(ChessPiece):
     def getPossibleMoves(self, ChessBoard):
         possibleMoves = []
+        possibleMovements = []
+        possibleKillMoves =[]
         currPosition = self.boardPosition
         currColor = self.color
 
@@ -41,7 +43,7 @@ class Pawn(ChessPiece):
         elif currPosition[0]+ movementDirection >= 0 and currPosition[0]+ movementDirection <= 7:
             possibleMovements = [[currPosition[0] + movementDirection, currPosition[1]],  [currPosition[0]+ 2*movementDirection, currPosition[1]]]
         else:
-            possibleMovement = []
+            possibleMovements = []
 
         for tarPosition in possibleKillMoves:  
             piecePropertiesAtPosition = ChessBoard.chessPiecePropertiesAtPosition([tarPosition[0], tarPosition[1]])    
@@ -50,10 +52,10 @@ class Pawn(ChessPiece):
                 possibleMoves.append(tarPosition)
 
         for tarPosition in possibleMovements:
-          if ChessBoard.clearPathToMoveToPosition(currPosition, tarPosition):
-              possibleMoves.append(tarPosition)
+            #if tarPosition[0] + movementDirection < 7 and tarPosition[0] + movementDirection >= 0:
+            if ChessBoard.clearPathToMoveToPosition(currPosition, [tarPosition[0] + movementDirection, tarPosition[1]]):
+                possibleMoves.append(tarPosition)
 
-                
         return possibleMoves
 
     def copyPiece(self):
@@ -427,11 +429,15 @@ class ChessBoard:
     def chessPiecePropertiesAtPosition(self, position):
         # returns [pieceAtLocatin(0 no piece or 1 for existence), piece color as string ]
         # TODO look up better way to get objects out of nested lists
-        row = self.boardSpaces[position[0]]
-        chessPiece = row[position[1]]
-        if chessPiece != 0:
-            return 1, chessPiece.color
-        else:
+        try:
+            row = self.boardSpaces[position[0]]
+            chessPiece = row[position[1]]
+            if chessPiece != 0:
+                return 1, chessPiece.color
+            else:
+                return 0, None
+        
+        except ValueError:
             return 0, None
 
     def _clearPathToMoveToPositionGivenDirection(self, startPosition, endPosition, xMove, yMove):
