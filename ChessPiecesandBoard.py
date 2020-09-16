@@ -15,29 +15,46 @@ class ChessPiece:
 class Pawn(ChessPiece):
     def getPossibleMoves(self, ChessBoard):
         possibleMoves = []
+        possibleMovements = []
+        possibleKillMoves =[]
         currPosition = self.boardPosition
         currColor = self.color
 
         if not(currColor == 'black' or currColor == 'white'):
             print('invalid color was given for target pawn:'+self.color)
             return None
-        # TODO double pawn step when pawn has not moved yet
-        for row in range(8):
-            for col in range(8):
-                tarPosition = [row, col]
-                if currColor == 'black':
-                    movementDirection = 1
-                else:
-                    movementDirection = -1
-                if row == currPosition[0] + movementDirection:
-                    piecePropertiesAtPosition = ChessBoard.chessPiecePropertiesAtPosition([
-                                                                                          row, col])
-                    # nothing blocking path
-                    if piecePropertiesAtPosition[0] == 0 and col == currPosition[1]:
-                        possibleMoves.append(tarPosition)
-                    # enemy to kill diagonally
-                    if piecePropertiesAtPosition[0] == 1 and (col == currPosition[1]+1 or col == currPosition[1]-1) and piecePropertiesAtPosition[1] != currColor:
-                        possibleMoves.append(tarPosition)
+
+        if currColor == 'black':
+            movementDirection = 1
+        else:
+            movementDirection = -1
+        
+        if currPosition[1] - 1 >= 0 and currPosition[1] + 1 <= 7  and currPosition[0]+ movementDirection >= 0 and currPosition[0]+ movementDirection <= 7: 
+            possibleKillMoves =[[currPosition[0]+ movementDirection, currPosition[1] + 1], [currPosition[0]+ movementDirection, currPosition[1] - 1]] 
+        elif currPosition[1] + 1 <= 6  and currPosition[0]+ movementDirection >= 0 and currPosition[0]+ movementDirection <= 7:
+            possibleKillMoves =[ [currPosition[0]+ movementDirection, currPosition[1] + 1]] 
+        elif currPosition[1] - 1 > 0 and currPosition[0]+ movementDirection >= 0 and currPosition[0]+ movementDirection <= 7: 
+            possibleKillMoves =[[currPosition[0]+ movementDirection, currPosition[1] - 1]]
+        else: 
+            possibleKillMoves =[]
+
+        if self.hasMoved and currPosition[0]+ movementDirection >= 0 and currPosition[0]+ movementDirection <= 7:
+            possibleMovements = [[currPosition[0] + movementDirection, currPosition[1]]]
+        elif currPosition[0]+ movementDirection >= 0 and currPosition[0]+ movementDirection <= 7:
+            possibleMovements = [[currPosition[0] + movementDirection, currPosition[1]],  [currPosition[0]+ 2*movementDirection, currPosition[1]]]
+        else:
+            possibleMovements = []
+
+        for tarPosition in possibleKillMoves:  
+            piecePropertiesAtPosition = ChessBoard.chessPiecePropertiesAtPosition([tarPosition[0], tarPosition[1]])    
+            # enemy to kill diagonally
+            if piecePropertiesAtPosition[0] and piecePropertiesAtPosition[1] != currColor:
+                possibleMoves.append(tarPosition)
+
+        for tarPosition in possibleMovements:
+            #if tarPosition[0] + movementDirection < 7 and tarPosition[0] + movementDirection >= 0:
+            if ChessBoard.clearPathToMoveToPosition(currPosition, [tarPosition[0] + movementDirection, tarPosition[1]]):
+                possibleMoves.append(tarPosition)
 
         return possibleMoves
 
@@ -325,7 +342,8 @@ class ChessBoard:
         if endPiece != 0:
             self._removePiece(endPiece, deletePiece=True)
         self._removePiece(startPiece)
-        self._addPiece(startPiece, endingPiecePosition)
+        self._addPiece(startPiece, list(endingPiecePosition))
+        startPiece.hasMoved = True
         # TODO castling moves
 
     def _addPiece(self, chesspiece, position=None):
@@ -333,8 +351,9 @@ class ChessBoard:
             return chesspiece
 
         if position == None:
-            position = chesspiece.boardPosition
+            position = list(chesspiece.boardPosition)
 
+        
         currBoard = self.boardSpaces
         positionProperties = self.chessPiecePropertiesAtPosition(position)
         if positionProperties[0]:
@@ -343,7 +362,7 @@ class ChessBoard:
         else:
             self.boardSpaces[position[0]][position[1]] = chesspiece
             if chesspiece.boardPosition != position:
-                chesspiece.boardPosition = position
+                chesspiece.boardPosition = list(position)
             return True
 
     def _removePiece(self, chesspiece, currPosition=None, deletePiece=False):
@@ -394,15 +413,14 @@ class ChessBoard:
                 for endLocation in moves[1]:
                     if not (endLocation in movesOutOfCheck):
                         isCheck = self.movePutsPlayerIntoCheck(color, startLocation, endLocation)
+                        #print ('isCheck:', isCheck)
+                        #print('selected piece:', moves[0], ' @ ', startLocation)
+                        #print('moving to:', endLocation)
                         if not(isCheck):
                             movesOutOfCheck.append(endLocation)
 
         return movesOutOfCheck
 
-
-    def isCheckMate(self, color):
-        # TODO evaluate the current state of the board for Check Mate condiitions
-        return False
 
     def _addHistory(self):
         # store the current state of the board into history
@@ -411,11 +429,15 @@ class ChessBoard:
     def chessPiecePropertiesAtPosition(self, position):
         # returns [pieceAtLocatin(0 no piece or 1 for existence), piece color as string ]
         # TODO look up better way to get objects out of nested lists
-        row = self.boardSpaces[position[0]]
-        chessPiece = row[position[1]]
-        if chessPiece != 0:
-            return 1, chessPiece.color
-        else:
+        try:
+            row = self.boardSpaces[position[0]]
+            chessPiece = row[position[1]]
+            if chessPiece != 0:
+                return 1, chessPiece.color
+            else:
+                return 0, None
+        
+        except ValueError:
             return 0, None
 
     def _clearPathToMoveToPositionGivenDirection(self, startPosition, endPosition, xMove, yMove):

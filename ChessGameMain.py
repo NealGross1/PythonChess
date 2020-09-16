@@ -89,7 +89,7 @@ while not GameInterface.gameIsOver:
                     ##MOVE TO GET OUT OF CHECK
                     if GameInterface.currentPlayerInCheck: 
                         ##MAKE MOVE TO GET OUT OF CHECK
-                        if RowCol in GameInterface.checkMoves:
+                        if RowCol in GameInterface.checkMoves and RowCol in GameInterface.selectedPieceMoves:
                             putsIntoCheck = GameInterface.Game.movePutsPlayerIntoCheck(GameInterface.currentPlayer,GameInterface.selectedPieceCoordinates, RowCol)
                             if putsIntoCheck:
                                 print ('invalid move to:', RowCol)
